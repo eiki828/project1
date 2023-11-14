@@ -13,6 +13,6 @@
     <a class="nav-link{% if active == 'taken' %} active{% endif %}" href="{% url 'students:taken_quiz_list' %}">完了</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link{% if active == 'retry' %} active{% endif %}" href="">再挑戦</a>
+    <a class="nav-link{% if active == 'retry' %} active{% endif %}" href="{% url 'students:retry_quiz_list' %}">再挑戦</a>
   </li>
 </ul>

@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count,F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -74,6 +74,25 @@ class TakenQuizListView(StudentRequiredMixin, ListView):
             .order_by('quiz__name')
         return queryset
 
+
+class RetryQuizListView(StudentRequiredMixin, ListView):
+    model = TakenQuiz
+    context_object_name = 'retry_quizzes'
+    template_name = 'classroom/students/retry_quiz_list.html'
+
+    def get_queryset(self):
+        student: Student = self.request.user.student
+        queryset = student.quiz_answers.\
+            filter(answer__is_correct=False)\
+            .values('answer__question__quiz', 'answer__question__quiz__name') \
+            .annotate(
+                 not_corrected_count=Count('answer'),
+                 name=F('answer__question__quiz__name'),
+                 quiz_id=F('answer__question__quiz'),
+                 ) \
+            .all().order_by('name')
+
+        return queryset
 
 @login_required
 @student_required

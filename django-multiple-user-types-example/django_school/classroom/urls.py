@@ -9,6 +9,7 @@ urlpatterns = [
         path('', students.QuizListView.as_view(), name='quiz_list'),
         path('lebel/', students.StudentlebelView.as_view(), name='student_lebel'),
         path('taken/', students.TakenQuizListView.as_view(), name='taken_quiz_list'),
+        path('retry/', students.RetryQuizListView.as_view(), name='retry_quiz_list'),
         path('quiz/<int:pk>/', students.take_quiz, name='take_quiz'),
     ], 'classroom'), namespace='students')),
 
