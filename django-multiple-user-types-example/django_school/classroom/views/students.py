@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import Count,F
+from django.db.models import Count, F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -15,6 +15,7 @@ from ..mixins import StudentRequiredMixin
 
 import random
 import math
+
 
 class StudentSignUpView(CreateView):
     model = User
@@ -29,7 +30,6 @@ class StudentSignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         return redirect('students:quiz_list')
-
 
 
 class StudentlebelView(StudentRequiredMixin, UpdateView):
@@ -82,17 +82,25 @@ class RetryQuizListView(StudentRequiredMixin, ListView):
 
     def get_queryset(self):
         student: Student = self.request.user.student
+        # クイズごとに集約を行う
         queryset = student.quiz_answers.\
             filter(answer__is_correct=False)\
-            .values('answer__question__quiz', 'answer__question__quiz__name') \
-            .annotate(
-                 not_corrected_count=Count('answer'),
-                 name=F('answer__question__quiz__name'),
-                 quiz_id=F('answer__question__quiz'),
-                 ) \
+            .values(
+                'answer__question__quiz',
+                'answer__question__quiz__name',
+                'answer__question__quiz__subject__color',
+                'answer__question__quiz__subject__name') \
+            .annotate(  # 集約したときは親のテーブルのオブジェクトを取得できないので、各項目を出力していく
+                not_corrected_count=Count('answer'),
+                name=F('answer__question__quiz__name'),
+                quiz_id=F('answer__question__quiz'),
+                subject_color=F('answer__question__quiz__subject__color'),
+                subject_name=F('answer__question__quiz__subject__name'),
+            ) \
             .all().order_by('name')
 
         return queryset
+
 
 @login_required
 @student_required
@@ -106,7 +114,8 @@ def take_quiz(request, pk):
     total_questions = quiz.questions.count()
     unanswered_questions = student.get_unanswered_questions(quiz)
     total_unanswered_questions = unanswered_questions.count()
-    progress = 100 - round(((total_unanswered_questions - 1) / total_questions) * 100)
+    progress = 100 - \
+        round(((total_unanswered_questions - 1) / total_questions) * 100)
     question = unanswered_questions.first()
 
     if request.method == 'POST':
@@ -119,25 +128,26 @@ def take_quiz(request, pk):
                 if student.get_unanswered_questions(quiz).exists():
                     return redirect('students:take_quiz', pk)
                 else:
-                    correct_answers = student.quiz_answers.filter(answer__question__quiz=quiz, answer__is_correct=True).count()
+                    correct_answers = student.quiz_answers.filter(
+                        answer__question__quiz=quiz, answer__is_correct=True).count()
                     score = round((correct_answers / total_questions) * 100.0)
-                    TakenQuiz.objects.create(student=student, quiz=quiz, score=score)
-
+                    TakenQuiz.objects.create(
+                        student=student, quiz=quiz, score=score)
 
                     if score < 50.0:
                         random_messages = [
-                        "もう少し頑張ろう",
-                        "調子を出していこう",
-                        "頑張りが足りないみたいだね",
-                    ]
+                            "もう少し頑張ろう",
+                            "調子を出していこう",
+                            "頑張りが足りないみたいだね",
+                        ]
                     random_message = random.choice(random_messages)
                     messages.warning(request, f'{random_message} 点数は {score}')
         else:
-                        random_messages = [
-                        "頑張ったね、よくできました。",
-                        "次のレベルに進んでみよう",
-                        "満点目指してみよう！！",
-        ]
+            random_messages = [
+                "頑張ったね、よくできました。",
+                "次のレベルに進んでみよう",
+                "満点目指してみよう！！",
+            ]
         random_message = random.choice(random_messages)
         messages.success(request, f'{random_message}   点数は {score}')
 
