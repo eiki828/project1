@@ -9,6 +9,7 @@
           <th>問題</th>
           <th>レベル</th>
           <th>問題数</th>
+          <th>挑戦回数</th>
           <th></th>
         </tr>
       </thead>
@@ -18,13 +19,14 @@
             <td class="align-middle">{{ quiz.name }}</td>
             <td class="align-middle">{% include "classroom/components/subject_badge.html" with color=quiz.subject_color name=quiz.subject_name %}</td>
             <td class="align-middle">{{ quiz.not_corrected_count }} 問</td>
+            <td class="align-middle">{{ quiz.try_num }} 回</td>
             <td class="text-right">
-              <a href="{% url 'students:take_quiz' quiz.quiz_id %}" class="btn btn-primary">Start</a>
+              <a href="{% url 'students:retry_quiz' quiz.quiz_id quiz.try_num %}" class="btn btn-primary">Start</a>
             </td>
           </tr>
         {% empty %}
           <tr>
-            <td class="bg-light text-center font-italic" colspan="4">できる問題はありません。</td>
+            <td class="bg-light text-center font-italic" colspan="4">間違えた問題はありません</td>
           </tr>
         {% endfor %}
       </tbody>
