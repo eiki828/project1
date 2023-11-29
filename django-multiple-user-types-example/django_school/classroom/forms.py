@@ -4,7 +4,7 @@ from django.db import transaction
 from django.forms.utils import ValidationError
 
 from classroom.models import (Answer, Question, Student, StudentAnswer,
-                              Subject, User)
+                              Subject, User, Explanation)
 
 
 class TeacherSignUpForm(UserCreationForm):
@@ -84,3 +84,15 @@ class TakeQuizForm(forms.ModelForm):
         order = kwargs.pop('order', 'text')
         super().__init__(*args, **kwargs)
         self.fields['answer'].queryset = question.answers.order_by(order)
+
+
+class ExplanationForm(forms.ModelForm):
+    class Meta:
+        model = Explanation
+        fields = ('text', )
+        labels = {
+            'text': '解説文入力',
+        }
+        widgets = {
+            'text': forms.Textarea(attrs={'placeholder': '解説文をここに入力'}),
+        }

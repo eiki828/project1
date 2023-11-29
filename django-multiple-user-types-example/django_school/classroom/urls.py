@@ -31,5 +31,10 @@ urlpatterns = [
              teachers.question_change, name='question_change'),
         path('quiz/<int:quiz_pk>/question/<int:question_pk>/delete/',
              teachers.QuestionDeleteView.as_view(), name='question_delete'),
+        path('quiz/<int:quiz_pk>/question/<int:question_pk>/explanation',
+             teachers.ExplanationView.as_view(), name='explanation'),
+        path('quiz/<int:quiz_pk>/question/<int:question_pk>/explanation/delete',
+             teachers.ExplanationDeleteView.as_view(), name='explanation_delete'),
+
     ], 'classroom'), namespace='teachers')),
 ]

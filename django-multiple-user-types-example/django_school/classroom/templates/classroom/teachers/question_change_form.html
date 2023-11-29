@@ -57,6 +57,9 @@
     <p>
     </p>
     <button type="submit" class="btn btn-success">完了</button>
+    {% if question.pk %}
+      <a href="{% url 'teachers:explanation' quiz.pk question.pk %}" class="btn btn-primary" role="button">解説</a>
+    {% endif %}
     <a href="{% url 'teachers:quiz_change' quiz.pk %}" class="btn btn-outline-secondary" role="button">戻る</a>
     <a href="{% url 'teachers:question_delete' quiz.pk question.pk %}" class="btn btn-danger float-right">消去</a>
   </form>

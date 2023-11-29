@@ -87,7 +87,8 @@ class TakenQuizListView(StudentRequiredMixin, ListView):
         queryset = self.request.user.student.taken_quizzes \
             .select_related('quiz', 'quiz__subject') \
             .filter(id__in=ids) \
-            .annotate(explanation_count=Subquery(explanation_subquery.values('explanation_count'))) \
+            .annotate(explanation_count=Subquery(
+                explanation_subquery.values('explanation_count'))) \
             .order_by('quiz__name')
         return queryset
 
