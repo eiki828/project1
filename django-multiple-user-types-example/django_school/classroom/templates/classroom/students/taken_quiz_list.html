@@ -7,6 +7,7 @@
       <thead>
         <tr>
           <th>問題</th>
+          <th>解説</th>
           <th>レベル</th>
           <th>点数</th>
         </tr>
@@ -15,6 +16,13 @@
         {% for taken_quiz in taken_quizzes %}
           <tr>
             <td>{{ taken_quiz.quiz.name }}</td>
+            <td>
+              {% if taken_quiz.explanation_count == 0 %}
+              -
+              {% else %}
+              <a href="">答え</a>
+              {% endif %}
+            </td>
             <td>{{ taken_quiz.quiz.subject.get_html_badge }}</td>
             <td>{{ taken_quiz.score }}</td>
           </tr>

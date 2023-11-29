@@ -95,3 +95,10 @@ class StudentAnswer(models.Model):
         Student, on_delete=models.CASCADE, related_name='quiz_answers')
     answer = models.ForeignKey(
         Answer, on_delete=models.CASCADE, related_name='+')
+
+
+class Explanation(models.Model):
+    """ 設問の解説 """
+    question = models.OneToOneField(
+        Question, on_delete=models.CASCADE, related_name='explanation')
+    text = models.TextField()

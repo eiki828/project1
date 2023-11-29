@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import Count, F, Subquery, OuterRef, Max
+from django.db.models import Count, F, Subquery, OuterRef, Max, Min
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -71,17 +71,23 @@ class TakenQuizListView(StudentRequiredMixin, ListView):
     def get_queryset(self):
         # 本当はDistinctでQuizの単位で集約したかったが、
         # SQliteはDistinct未対応のため、仕方なくannotateで対応
-
         ids = self.request.user.student.taken_quizzes \
             .select_related('quiz', 'quiz__subject') \
             .values('student', 'quiz',) \
-            .annotate(latest_id=Max('id')) \
+            .annotate(latest_id=Min('id')) \
             .order_by('quiz__name') \
             .values('latest_id')
+
+        explanation_subquery = self.request.user \
+            .student.taken_quizzes \
+            .values('quiz') \
+            .filter(quiz=OuterRef('quiz_id')) \
+            .annotate(explanation_count=Count('quiz__questions__explanation'))
 
         queryset = self.request.user.student.taken_quizzes \
             .select_related('quiz', 'quiz__subject') \
             .filter(id__in=ids) \
+            .annotate(explanation_count=Subquery(explanation_subquery.values('explanation_count'))) \
             .order_by('quiz__name')
         return queryset
 
