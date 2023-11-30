@@ -14,9 +14,13 @@
         {% for question in questions %}
           <tr>
             <td>
-              <a href="{% url 'students:quiz_explanation_detail' question.quiz.pk question.pk %}">
+              {% if question.explanation %}
+                <a href="{% url 'students:quiz_explanation_detail' question.quiz.pk question.pk %}">
+                  {{ question.text }}
+                </a>
+              {% else %}
                 {{ question.text }}
-              </a>
+              {% endif %}
             </td>
             {% comment "" %}<a href="{% url 'students:quiz_explanation_detail' question.quiz.pk question.pk %}">{% endcomment %}
             <td>
