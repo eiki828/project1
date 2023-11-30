@@ -6,11 +6,11 @@ from django.db.models import Count, F, Subquery, OuterRef, Max, Min
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 
 from ..decorators import student_required
 from ..forms import StudentlebelForm, StudentSignUpForm, TakeQuizForm
-from ..models import Quiz, Student, TakenQuiz, User, Question
+from ..models import Quiz, Student, TakenQuiz, User, Question, StudentAnswer
 from ..mixins import StudentRequiredMixin
 
 import random
@@ -129,6 +129,31 @@ class RetryQuizListView(StudentRequiredMixin, ListView):
         return queryset
 
 
+class ExplanationListView(StudentRequiredMixin, ListView):
+    model = Quiz
+    context_object_name = 'questions'
+    template_name = 'classroom/students/explanations_list.html'
+
+    def get_queryset(self):
+        queryset = Quiz.objects.get(pk=self.kwargs['pk']).questions.all()
+        return queryset
+
+
+class ExplanationDetailView(StudentRequiredMixin, DetailView):
+    model = Question
+    context_object_name = 'explanation'
+    template_name = 'classroom/students/explanations_detail.html'
+
+    def get_object(self, queryset=None):
+        question = Question.objects.get(
+            pk=self.kwargs['question_pk'])
+
+        if hasattr(question, 'explanation'):
+            return question.explanation
+
+        return None
+
+
 @login_required
 @student_required
 def take_quiz(request, pk):
@@ -167,14 +192,17 @@ def take_quiz(request, pk):
                             "調子を出していこう",
                             "頑張りが足りないみたいだね",
                         ]
-                    random_message = random.choice(random_messages)
-                    messages.warning(request, f'{random_message} 点数は {score}')
+                        random_message = random.choice(random_messages)
+                        messages.warning(
+                            request, f'{random_message} 点数は {score}')
+                    random_message = ''
         else:
             random_messages = [
                 "頑張ったね、よくできました。",
                 "次のレベルに進んでみよう",
                 "満点目指してみよう！！",
             ]
+            score = '-'
         random_message = random.choice(random_messages)
         messages.success(request, f'{random_message}   点数は {score}')
 
@@ -251,18 +279,15 @@ def retry_quiz(request, pk, challenge_num):
                         messages.warning(
                             request, f'{random_message} 点数は {score}')
                     else:
-                        random_messages = [
-                            "頑張ったね、よくできました。",
-                            "次のレベルに進んでみよう",
-                            "満点目指してみよう！！",
-                        ]
+                        random_message = ''
         else:
             random_messages = [
                 "頑張ったね、よくできました。",
                 "次のレベルに進んでみよう",
                 "満点目指してみよう！！",
             ]
-        random_message = random.choice(random_messages)
+            random_message = random.choice(random_messages)
+            score = '-'
         messages.success(request, f'{random_message}   点数は {score}')
 
         return redirect('students:retry_quiz_list')

@@ -20,7 +20,7 @@
               {% if taken_quiz.explanation_count == 0 %}
               -
               {% else %}
-              <a href="">答え</a>
+              <a href="{% url "students:quiz_explanation" taken_quiz.quiz.pk %}">答え</a>
               {% endif %}
             </td>
             <td>{{ taken_quiz.quiz.subject.get_html_badge }}</td>

@@ -13,6 +13,13 @@ urlpatterns = [
         path('retry/', students.RetryQuizListView.as_view(),
              name='retry_quiz_list'),
         path('quiz/<int:pk>/', students.take_quiz, name='take_quiz'),
+        path('quiz/<int:pk>/explanation/',
+             students.ExplanationListView.as_view(),
+             name='quiz_explanation'),
+        path('quiz/<int:pk>/explanation/<int:question_pk>/',
+             students.ExplanationDetailView.as_view(),
+             name='quiz_explanation_detail'),
+
         path('retry_quiz/<int:pk>/<int:challenge_num>',
              students.retry_quiz, name='retry_quiz'),
     ], 'classroom'), namespace='students')),
