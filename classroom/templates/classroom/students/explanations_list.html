@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load common_tags %}
+{% block content %}
+  <div class="card">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>問題</th>
+          <th>間違え</th>
+          <th>設問数</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for question in questions %}
+          <tr>
+            <td>
+              {% if question.explanation %}
+                <a href="{% url 'students:quiz_explanation_detail' question.quiz.pk question.pk %}">
+                  {{ question.text }}
+                </a>
+              {% else %}
+                {{ question.text }}
+              {% endif %}
+            </td>
+            {% comment "" %}<a href="{% url 'students:quiz_explanation_detail' question.quiz.pk question.pk %}">{% endcomment %}
+            <td>
+              {% get_latest_answer request.user.student question as answer %}
+              {% if not answer.answer.is_correct %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16" style="color: red;">
+                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+              </svg>
+              {% endif %}
+            </td>
+            <td>{{ question.answers.count }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td class="bg-light text-center font-italic" colspan="3">クイズを完了していません</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+  <div>
+    <a href="{% url 'students:taken_quiz_list' %}" class="btn btn-outline-secondary float-right mt-3" role="button" style="margin-left: auto;">戻る</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'teachers:quiz_change_list' %}">問題作成データ</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teachers:quiz_change' quiz.pk %}">{{ explanation.question.quiz.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teachers:question_change' explanation.question.quiz.pk explanation.question.pk %}">{{ explanation.question.text|slice:5 }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teachers:explanation' explanation.question.quiz.pk explanation.question.pk %}">解説</a></li>
+      <li class="breadcrumb-item active" aria-current="page">削除の確認</li>
+    </ol>
+  </nav>
+  <h2 class="mb-3">削除の確認</h2>
+  <p class="lead"><div>解説文：<strong>"{{ explanation.text }}"</strong></div>を削除してもよろしいですか? 元に戻ることはありません。</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-lg">Yes, I'm sure</button>
+    <a href="{% url 'teachers:explanation' explanation.question.quiz.pk explanation.question.pk %}" class="btn btn-outline-secondary btn-lg" role="button">キャンセル</a>
+  </form>
+{% endblock %}

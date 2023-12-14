@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load common_tags %}
+{% block content %}
+  <div class="card">
+    <div class="card-body">
+      <div>
+        <div class="mb-3">
+          <h2>
+            問題：
+          </h2>
+          <div style="margin-left: 1em;">
+            {{ explanation.question.text }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <h2>
+            解答：
+          </h2>
+          <div>
+            <ol>
+              {% for answer in explanation.question.answers.all %}
+                <li {% if answer.is_correct %}class="correct text-danger"{% endif %}>{{answer}}</li>
+              {% endfor %}
+            </ol>
+          </div>
+          <div class="mb-3" style="margin-left: 1em;">
+            {% get_latest_answer request.user.student explanation.question as student_answer %}
+            あなたの解答： {{ student_answer.answer.text }}
+          </div>
+        </div>
+        <div>
+          <h2>
+            解説：
+          </h2>
+          {% if post_data.image %}
+          <img class="rounded detail-img" src="{{ post_data.image.url }}" alt="" />
+          {% endif %}
+          <div class="mx-3">
+            {{ explanation.text }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <a href="{% url "students:quiz_explanation" explanation.question.quiz.pk %}" class="btn btn-outline-secondary float-right mt-3" role="button" style="margin-left: auto;">戻る</a>
+  </div>
+  <style>
+    li.correct::before {
+      content: "○";
+      color: red;
+      margin-right: 0.5rem;
+    }
+  </style>
+{% endblock %}
