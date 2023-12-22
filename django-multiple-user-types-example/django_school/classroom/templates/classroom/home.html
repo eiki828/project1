@@ -17,10 +17,19 @@
     </form>
   </div>
   <div class="form-container sign-in-container">
-    <form action="#">
+    <form action="#"  method="post" novalidate>
+      {% csrf_token %}
       <h1>ログイン</h1>
-      <input type="text" placeholder="Name" />
-      <input type="password" placeholder="Password" />
+      {% if error_message %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <p class="mb-0 mt-0" style="word-break: auto-phrase;">{{ error_message }}</p>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endif %}
+      <input name="username" type="text" placeholder="Name" />
+      <input name="password" type="password" placeholder="Password" />
       <button>ログイン</button>
     </form>
   </div>
