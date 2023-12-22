@@ -9,15 +9,20 @@
 <h1>G検定を勉強しよう！</h1>
 <div class="container" id="container">
   <div class="form-container sign-up-container">
-    <form action="#">
+    <form method="post" novalidate>
+      {% csrf_token %}
       <h1>アカウント作成</h1>
-      <input type="text" placeholder="Name" />
-      <input type="password" placeholder="Password" />
-      <button>完了</button>
+      <input id="{{ signup_form.username.id_for_label }}" name="{{signup_form.username.name}}" type="text" placeholder="Name" />
+      <input id="{{ signup_form.password1.id_for_label }}" name="{{signup_form.password1.name}}" type="password" placeholder="Password" />
+      <input id="{{ signup_form.password2.id_for_label }}" name="{{signup_form.password2.name}}" type="password" placeholder="ConfirmationPassword" />
+      
+      <label for="{{signup_form.lebel.id_for_label}}" style="margin-right: auto;">Level</label>
+      {{signup_form.lebel}}
+      <button value="signup" name="signup">完了</button>
     </form>
   </div>
   <div class="form-container sign-in-container">
-    <form action="#"  method="post" novalidate>
+    <form method="post" novalidate>
       {% csrf_token %}
       <h1>ログイン</h1>
       {% if error_message %}
@@ -30,7 +35,7 @@
       {% endif %}
       <input name="username" type="text" placeholder="Name" />
       <input name="password" type="password" placeholder="Password" />
-      <button>ログイン</button>
+      <button value="login" name="login">ログイン</button>
     </form>
   </div>
   <div class="overlay-container">
@@ -48,4 +53,11 @@
     </div>
   </div>
 </div>
+<style>
+ .reset{
+  margin-right: auto !important;
+  width: auto !important;
+ }
+
+</style>
 {% endblock %}
