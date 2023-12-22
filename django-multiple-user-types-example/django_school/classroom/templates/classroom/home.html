@@ -1,11 +1,42 @@
-{% extends 'base.html' %}
+{% extends 'base_brand_new.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
 
 {% block content %}
-  <h2>ようこそ！！！！！！！！ <span class="icon-emo-happy"></span></h2>
-  <p class="lead">
-    ログイン <a href="{% url 'login' %}">ログイン</a>
-   <br> アカウント作成 <a href="{% url 'student_signup' %}">account</a> 
-  </p>
-  <hr>
- 
+<h1>G検定を勉強しよう！</h1>
+<div class="container" id="container">
+  <div class="form-container sign-up-container">
+    <form action="#">
+      <h1>アカウント作成</h1>
+      <input type="text" placeholder="Name" />
+      <input type="password" placeholder="Password" />
+      <button>完了</button>
+    </form>
+  </div>
+  <div class="form-container sign-in-container">
+    <form action="#">
+      <h1>ログイン</h1>
+      <input type="text" placeholder="Name" />
+      <input type="password" placeholder="Password" />
+      <button>ログイン</button>
+    </form>
+  </div>
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>今日も頑張ろう！</h1>
+        <p>昨日よりも成長できているかな？😒</p>
+        <button class="ghost" id="signIn">ログイン</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>ようこそ！</h1>
+        <p>新しい学びを始めていきましょう</p>
+        <button class="ghost" id="signUp">アカウント作成</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
