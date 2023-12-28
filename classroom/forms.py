@@ -87,17 +87,15 @@ class TakeQuizForm(forms.ModelForm):
 
 
 class ExplanationForm(forms.ModelForm):
-    image = forms.ImageField(label='イメージ画像', required=False) # 追加
-    
+    # image = forms.ImageField(label='イメージ画像', required=False) # 追加
+
     class Meta:
 
         model = Explanation
-        fields = ('text', )
+        fields = ('text', 'image')
         labels = {
             'text': '解説文入力',
         }
         widgets = {
             'text': forms.Textarea(attrs={'placeholder': '解説文をここに入力'}),
         }
-        
-

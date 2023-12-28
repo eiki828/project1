@@ -2,6 +2,9 @@ from django.urls import include, path
 
 from classroom.views import classroom, students, teachers
 
+from . import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', include('classroom.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -10,5 +13,7 @@ urlpatterns = [
          students.StudentSignUpView.as_view(), name='student_signup'),
     path('accounts/signup/teacher/',
          teachers.TeacherSignUpView.as_view(), name='teacher_signup'),
-     
+
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,7 +5,6 @@ from django.utils.html import escape, mark_safe
 from django.conf import settings
 
 
-
 class User(AbstractUser):
     is_student = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
@@ -104,13 +103,21 @@ class Explanation(models.Model):
     question = models.OneToOneField(
         Question, on_delete=models.CASCADE, related_name='explanation')
     text = models.TextField()
+    image = models.ImageField(
+        upload_to='uploads/explain/',
+        verbose_name='添付ファイル',
+        null=True,
+        blank=True
+    )
+
 
 class Post(models.Model):
-	author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-	title = models.CharField("タイトル", max_length=200)
-	image = models.ImageField(upload_to='images', verbose_name='イメージ画像', null=True, blank=True) # 追加
-	content = models.TextField("本文")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField("タイトル", max_length=200)
+    image = models.ImageField(
+        upload_to='images', verbose_name='イメージ画像', null=True, blank=True)  # 追加
+    content = models.TextField("本文")
 
-	def __str__(self):
-		return self.title
-
+    def __str__(self):
+        return self.title
