@@ -10,11 +10,14 @@ from django.views.generic import CreateView, ListView, UpdateView, DetailView
 
 from ..decorators import student_required
 from ..forms import StudentlebelForm, StudentSignUpForm, TakeQuizForm
-from ..models import Quiz, Student, TakenQuiz, User, Question, StudentAnswer
+from ..models import Quiz, Student, TakenQuiz, User, Question, TakenTime
 from ..mixins import StudentRequiredMixin
 
 import random
 import math
+
+from django.utils import timezone
+from django.utils.timezone import localtime
 
 
 class StudentSignUpView(CreateView):
@@ -162,6 +165,10 @@ def take_quiz(request, pk):
 
     if student.quizzes.filter(pk=pk).exists():
         return render(request, 'students/taken_quiz.html')
+    taken_time = TakenTime.objects.filter(student=student, quiz=quiz).first()
+    if taken_time is None:
+        TakenTime.objects.create(
+            student=student, quiz=quiz, take_start=timezone.now())
 
     total_questions = quiz.questions.count()
     unanswered_questions = student.get_unanswered_questions(quiz)
@@ -183,8 +190,10 @@ def take_quiz(request, pk):
                     correct_answers = student.quiz_answers.filter(
                         answer__question__quiz=quiz, answer__is_correct=True).count()
                     score = round((correct_answers / total_questions) * 100.0)
-                    TakenQuiz.objects.create(
+                    TakenQuiz.objects.update_or_create(
                         student=student, quiz=quiz, score=score)
+                    taken_time.take_end = timezone.now()
+                    taken_time.save()
 
                     if score < 50.0:
                         random_messages = [
