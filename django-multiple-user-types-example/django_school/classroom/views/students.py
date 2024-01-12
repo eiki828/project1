@@ -164,7 +164,8 @@ def take_quiz(request, pk):
     student = request.user.student
 
     if student.quizzes.filter(pk=pk).exists():
-        return render(request, 'students/taken_quiz_list.html')
+        return redirect('students:quiz_list')
+        # return render(request, 'students/taken_quiz_list.html')
     taken_time = TakenTime.objects.filter(student=student, quiz=quiz).first()
     if taken_time is None:
         TakenTime.objects.create(
@@ -204,6 +205,12 @@ def take_quiz(request, pk):
                         random_message = random.choice(random_messages)
                         messages.warning(
                             request, f'{random_message} 点数は {score}')
+                    else:
+                        random_messages = [
+                            "頑張ったね、よくできました。",
+                            "次のレベルに進んでみよう",
+                            "満点目指してみよう！！",
+                        ]
                     random_message = ''
         else:
             random_messages = [
