@@ -164,7 +164,7 @@ def take_quiz(request, pk):
     student = request.user.student
 
     if student.quizzes.filter(pk=pk).exists():
-        return render(request, 'students/taken_quiz.html')
+        return render(request, 'students/taken_quiz_list.html')
     taken_time = TakenTime.objects.filter(student=student, quiz=quiz).first()
     if taken_time is None:
         TakenTime.objects.create(
@@ -176,7 +176,7 @@ def take_quiz(request, pk):
     progress = 100 - \
         round(((total_unanswered_questions - 1) / total_questions) * 100)
     question = unanswered_questions.first()
-
+    random_message = ''
     if request.method == 'POST':
         form = TakeQuizForm(question=question, data=request.POST)
         if form.is_valid():
