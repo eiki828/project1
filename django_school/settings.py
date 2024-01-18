@@ -127,4 +127,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Background
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Fixed the typo
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
