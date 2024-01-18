@@ -89,6 +89,19 @@ class TakenQuiz(models.Model):
     score = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def taken_time(self):
+        """ 問題を解くのにかかった時間 """
+        try:
+            taken_time = TakenTime.objects.get(
+                student=self.student, quiz=self.quiz)
+            if taken_time.take_end is not None and taken_time.take_start is not None:
+                return taken_time.take_end - taken_time.take_start
+            else:
+                return None
+        except TakenTime.DoesNotExist:
+            return None
+
 
 class StudentAnswer(models.Model):
     challenge_num = models.IntegerField(default=1)
@@ -96,6 +109,15 @@ class StudentAnswer(models.Model):
         Student, on_delete=models.CASCADE, related_name='quiz_answers')
     answer = models.ForeignKey(
         Answer, on_delete=models.CASCADE, related_name='+')
+
+
+class TakenTime(models.Model):
+    take_start = models.DateTimeField(null=True, blank=True)
+    take_end = models.DateTimeField(null=True, blank=True)
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='taken_time')
+    quiz = models.ForeignKey(
+        Quiz, on_delete=models.CASCADE, related_name='taken_time')
 
 
 class Explanation(models.Model):
