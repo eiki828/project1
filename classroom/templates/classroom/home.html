@@ -1,11 +1,63 @@
-{% extends 'base.html' %}
+{% extends 'base_brand_new.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
 
 {% block content %}
-  <h2>ようこそ！！！！！！！！ <span class="icon-emo-happy"></span></h2>
-  <p class="lead">
-    ログイン <a href="{% url 'login' %}">ログイン</a>
-   <br> アカウント作成 <a href="{% url 'student_signup' %}">account</a> 
-  </p>
-  <hr>
- 
+<h1>G検定を勉強しよう！</h1>
+<div class="container" id="container">
+  <div class="form-container sign-up-container">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <h1>アカウント作成</h1>
+      <input id="{{ signup_form.username.id_for_label }}" name="{{signup_form.username.name}}" type="text" placeholder="Name" />
+      <input id="{{ signup_form.password1.id_for_label }}" name="{{signup_form.password1.name}}" type="password" placeholder="Password" />
+      <input id="{{ signup_form.password2.id_for_label }}" name="{{signup_form.password2.name}}" type="password" placeholder="ConfirmationPassword" />
+      
+      <label for="{{signup_form.lebel.id_for_label}}" style="margin-right: auto;">Level</label>
+      {{signup_form.lebel}}
+      <button value="signup" name="signup">完了</button>
+    </form>
+  </div>
+  <div class="form-container sign-in-container">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <h1>ログイン</h1>
+      {% if error_message %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <p class="mb-0 mt-0" style="word-break: auto-phrase;">{{ error_message }}</p>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endif %}
+      <input name="username" type="text" placeholder="Name" />
+      <input name="password" type="password" placeholder="Password" />
+      <button value="login" name="login">ログイン</button>
+    </form>
+  </div>
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>今日も頑張ろう！</h1>
+        <p>昨日よりも成長できているかな？😒</p>
+        <button class="ghost" id="signIn">ログイン</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>ようこそ！</h1>
+        <p>新しい学びを始めていきましょう</p>
+        <button class="ghost" id="signUp">アカウント作成</button>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+ .reset{
+  margin-right: auto !important;
+  width: auto !important;
+ }
+
+</style>
 {% endblock %}
