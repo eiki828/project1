@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'teachers:quiz_change_list' %}">問題一覧</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teachers:quiz_change' question.quiz.pk %}">{{ question.quiz.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teachers:question_change' question.quiz.pk question.pk %}">{{ question|slice:5 }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">問題の新規作成</li>
+    </ol>
+  </nav>
+  <h2 class="mb-3">解説入力</h2>
+  <p class="lead"><div style="font-size: 0.8rem;">Question*</div>{{ question.text }}</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">保存</button>
+    <a href="{% url 'teachers:question_change' question.quiz.pk question.pk %}" class="btn btn-outline-secondary" role="button">戻る</a>
+
+    {% comment "" %}インタンスがある場合のみ削除可能とする{% endcomment %}
+    {% if form.instance.pk %}
+      <a href="{% url "teachers:explanation_delete" question.quiz.pk question.pk %}" class="btn btn-danger float-right">消去</a>
+    {% endif %}
+  </form>
+{% endblock %}
