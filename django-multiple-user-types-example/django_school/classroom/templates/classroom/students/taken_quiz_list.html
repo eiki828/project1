@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load common_tags %}
 {% block content %}
   {% include 'classroom/students/_header.html' with active='taken' %}
   <div class="card">
@@ -7,6 +7,7 @@
       <thead>
         <tr>
           <th>問題</th>
+          <th>時間</th>
           <th>解説</th>
           <th>レベル</th>
           <th>点数</th>
@@ -16,6 +17,13 @@
         {% for taken_quiz in taken_quizzes %}
           <tr>
             <td>{{ taken_quiz.quiz.name }}</td>
+            <td>
+              {% if taken_quiz.taken_time is None %}
+               未計測
+              {% else %}
+                {% timedelta_diplay taken_quiz.taken_time %}
+              {% endif %}
+            </td>
             <td>
               {% if taken_quiz.explanation_count == 0 %}
               -

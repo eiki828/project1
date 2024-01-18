@@ -10,11 +10,14 @@ from django.views.generic import CreateView, ListView, UpdateView, DetailView
 
 from ..decorators import student_required
 from ..forms import StudentlebelForm, StudentSignUpForm, TakeQuizForm
-from ..models import Quiz, Student, TakenQuiz, User, Question, StudentAnswer
+from ..models import Quiz, Student, TakenQuiz, User, Question, TakenTime
 from ..mixins import StudentRequiredMixin
 
 import random
 import math
+
+from django.utils import timezone
+from django.utils.timezone import localtime
 
 
 class StudentSignUpView(CreateView):
@@ -161,7 +164,12 @@ def take_quiz(request, pk):
     student = request.user.student
 
     if student.quizzes.filter(pk=pk).exists():
-        return render(request, 'students/taken_quiz.html')
+        return redirect('students:quiz_list')
+        # return render(request, 'students/taken_quiz_list.html')
+    taken_time = TakenTime.objects.filter(student=student, quiz=quiz).first()
+    if taken_time is None:
+        TakenTime.objects.create(
+            student=student, quiz=quiz, take_start=timezone.now())
 
     total_questions = quiz.questions.count()
     unanswered_questions = student.get_unanswered_questions(quiz)
@@ -169,7 +177,7 @@ def take_quiz(request, pk):
     progress = 100 - \
         round(((total_unanswered_questions - 1) / total_questions) * 100)
     question = unanswered_questions.first()
-
+    random_message = ''
     if request.method == 'POST':
         form = TakeQuizForm(question=question, data=request.POST)
         if form.is_valid():
@@ -183,8 +191,10 @@ def take_quiz(request, pk):
                     correct_answers = student.quiz_answers.filter(
                         answer__question__quiz=quiz, answer__is_correct=True).count()
                     score = round((correct_answers / total_questions) * 100.0)
-                    TakenQuiz.objects.create(
+                    TakenQuiz.objects.update_or_create(
                         student=student, quiz=quiz, score=score)
+                    taken_time.take_end = timezone.now()
+                    taken_time.save()
 
                     if score < 50.0:
                         random_messages = [
@@ -195,6 +205,12 @@ def take_quiz(request, pk):
                         random_message = random.choice(random_messages)
                         messages.warning(
                             request, f'{random_message} 点数は {score}')
+                    else:
+                        random_messages = [
+                            "頑張ったね、よくできました。",
+                            "次のレベルに進んでみよう",
+                            "満点目指してみよう！！",
+                        ]
                     random_message = ''
         else:
             random_messages = [
